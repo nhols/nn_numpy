@@ -14,9 +14,13 @@ def plot_random_digs(digs: np.array, dig_labels: np.array, n: int = 10) -> None:
 
 
 def plot_dig(dig_array: np.ndarray, label: int) -> None:
-    pyplot.imshow(dig_array, cmap=pyplot.get_cmap("gray"))
+    gen_dig_plot(dig_array)
     pyplot.title(f"label = {label}")
     pyplot.show()
+
+
+def gen_dig_plot(dig_array):
+    pyplot.imshow(dig_array, cmap=pyplot.get_cmap("gray"))
 
 
 # plot_random_digs(x_test, y_test)
@@ -121,3 +125,18 @@ def get_accuracy(y, y_hat):
 x_train, x_test = transform_reshape_dig_images(x_train), transform_reshape_dig_images(x_test)
 y_train, y_test = one_hot_labels(y_train), one_hot_labels(y_test)
 w1, b1, w2, b2 = gradient_descent(x_train, y_train, 5000, 0.1)
+
+
+def gen_pred_plot(y_pred, y, x):
+    gen_dig_plot(x)
+    pyplot.title(f"label: {y}, pred.: {y_pred}")
+    pyplot.show()
+
+
+z1, a1, z2, a2 = forward_prop(transform_reshape_dig_images(x_train), w1, b1, w2, b2)
+get_accuracy(one_hot_labels(y_train), a2)
+z1, a1, z2, a2 = forward_prop(transform_reshape_dig_images(x_test), w1, b1, w2, b2)
+get_accuracy(one_hot_labels(y_test), a2)
+
+for i in np.random.randint(0, len(x_test), 10):
+    gen_pred_plot(np.argmax(a2[:, i]), y_test[i], x_test[i])
