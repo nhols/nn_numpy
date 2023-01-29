@@ -1,6 +1,8 @@
 from typing import Callable
 import numpy as np
 
+from t import forward_prop
+
 
 class Activation:
     def __call__(self, x: np.ndarray) -> None:
@@ -22,6 +24,34 @@ class Softmax(Activation):
     def __call__(self, x: np.ndarray) -> np.ndarray:
         x_exp = np.exp(x - np.max(x))
         return x_exp / x_exp.sum(axis=0)
+
+
+LayerDesc = tuple[int, Activation]
+
+
+class NumpyNN:
+    def __init__(self, dim_in: int, architecture: list[LayerDesc], dim_out: int) -> None:
+
+        self.layers: list[Layer | FinalLayer] = []
+
+        prev_n = dim_in
+        for n_layer, activation in architecture[:-1]:
+            layer = Layer(shape=(prev_n, n_layer), activation=activation)
+            self.layers.add(layer)
+            prev_n = n_layer
+
+        dim_out, final_activation = architecture[-1]
+        final_layer = FinalLayer(shape=(prev_n, dim_out), activation=final_activation)
+        self.layers.add(final_layer)
+
+    def forward_prop(self, input: np.ndarray):
+        for layer in self.layers:
+            layer.forward_prop(input)
+            input = layer.a
+
+    def back_prop(self, labels: np.ndarray):
+        for layer in layers[::-1]:
+            pass
 
 
 class Layer:
